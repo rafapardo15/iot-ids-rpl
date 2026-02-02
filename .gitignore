@@ -12,3 +12,5 @@ data/
 # Archivos temporales
 *~
 *.swp
+
+contiki-ng/
