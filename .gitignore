@@ -1,0 +1,14 @@
+# Entorno virtual
+.venv/
+
+# Resultados y logs
+data/
+*.log
+
+# Java / Cooja
+*.class
+*.jar
+
+# Archivos temporales
+*~
+*.swp
