@@ -1,27 +1,50 @@
-# Anomaly-based IDS for RPL-based IoT networks
+# Anomaly-based IDS for RPL-based IoT Networks
 
-Proyecto académico para el diseño e implementación de un IDS distribuido
-basado en anomalías para redes IoT con RPL, utilizando Contiki-NG y Cooja.
+Project focused on the design and implementation of a distributed  
+anomaly-based Intrusion Detection System (IDS) for IoT networks using RPL,  
+developed with Contiki-NG and the Cooja simulator.
 
-## Tecnologías
+---
+
+## Technologies
+
 - Contiki-NG
 - Cooja Simulator
 - RPL / 6LoWPAN
-- Python (análisis de logs)
 
-## Estructura
-- firmware/     Código Contiki de los nodos
-- simulations/  Escenarios de Cooja
-- scripts/      Scripts de análisis y automatización
-- docs/         Memoria y figuras
+---
 
-# IoT RPL IDS – Environment Setup and Baseline Simulation
+## Project Structure
 
-This repository provides the **environment setup and baseline simulation**
-required to work with **RPL-based IoT networks** using **Contiki-NG** and the
-**Cooja simulator**.  
-The IDS design and analysis are intentionally excluded from this document and
-are covered in the technical report.
+```text
+iot-ids-rpl/
+├── contiki-ng/        # Contiki-NG framework (not versioned)
+├── firmware/          # IDS module, RPL modifications, attack firmware
+│   ├── ids/
+│   ├── dis-attack/
+│   ├── Makefile
+│   └── rpl-icmp6.c
+├── simulations/       # Cooja simulation scenarios (.csc)
+├── scripts/           # Setup and deployment scripts
+├── docs/              # Report and figures
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## Overview
+
+This repository contains:
+
+- An IDS module for detecting DIS-based attacks in RPL networks  
+- Integration of the IDS into the RPL control plane  
+- Attack firmware to simulate malicious nodes  
+- Simulation scenarios for evaluation (baseline and attack cases)  
+- A deployment script to integrate all modifications into Contiki-NG  
+
+The IDS performs real-time detection and mitigation by filtering malicious  
+DIS messages based on threshold and temporal analysis.
 
 ---
 
@@ -32,40 +55,114 @@ are covered in the technical report.
 - Ubuntu 24.04 LTS (WSL)
 - Internet access
 
-All development and simulation are performed **inside WSL (Linux)**.
+All development and simulations are performed **inside WSL (Linux)**.
 
 ---
 
-## 2. Clone the repository
+## 2. Clone the Repository
 
 ```bash
 git clone https://github.com/<user>/iot-ids-rpl.git
 cd iot-ids-rpl
 ```
+---
 
-## 3. Install system dependencies
+## 3. Install System Dependencies
 
 Run the provided setup script:
 
 ```bash
 ./scripts/setup_ubuntu.sh
 ```
+
 This installs:
 
 - Java 17
 - JavaFX (GUI support)
 - Build and compilation tools required by Cooja
 
+---
+
 ## 4. Clone Contiki-NG
 
-Contiki-NG is not versioned inside this repository and must be cloned locally:
+Contiki-NG is not included in this repository and must be cloned locally:
 
 ```bash
 git clone https://github.com/contiki-ng/contiki-ng.git contiki-ng
 ```
-## 5. Launch Cooja
+
+⚠️ The folder must be named contiki-ng and located in the root of this project.
+
+---
+
+## 5. Install IDS and Firmware Modifications
+
+Run the deployment script:
 
 ```bash
-cd contiki-ng/tools/cooja
+cd scripts
+chmod +x install_contiki_mods.sh
+./install_contiki_mods.sh
+```
+
+This script will:
+
+- Copy the IDS module into Contiki-NG
+- Replace the RPL implementation file (rpl-icmp6.c)
+- Install attack firmware
+- Update firmware build configuration
+
+---
+
+## 6. Run Cooja
+```bash
+cd ../contiki-ng/tools/cooja
 ./gradlew run
 ```
+
+---
+
+## 7. Load Simulations
+
+Simulation files are available in:
+
+```bash
+simulations/
+```
+
+Examples include:
+
+- dis-baseline.csc → normal network behavior
+- dis-attack.csc → attack scenario
+- S1_dense.csc, S2_medium.csc, etc. → extended scenarios
+
+---
+
+## IDS Functionality
+
+The IDS detects DIS flooding attacks by:
+
+- Monitoring incoming DIS messages per node
+- Applying a configurable threshold
+- Temporarily blocking suspicious nodes
+- Permanently blocking repeated offenders
+
+The detection mechanism is integrated directly into the RPL control plane,
+enabling real-time mitigation of malicious traffic.
+
+---
+
+## Reproducibility
+
+This project ensures reproducibility by:
+
+- Keeping Contiki-NG outside version control
+- Storing only custom and modified components
+- Providing an automated deployment script
+
+---
+
+## Notes
+- The deployment script overwrites specific Contiki-NG files
+- It is recommended to use a clean Contiki-NG clone
+- Simulations are ready to use and do not require installation
